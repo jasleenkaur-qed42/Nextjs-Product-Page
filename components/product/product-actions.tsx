@@ -11,7 +11,6 @@ const MIN_QUANTITY = 1;
 const MAX_QUANTITY = 12;
 
 function clampQuantity(value: number) {
-  if (Number.isNaN(value)) return MIN_QUANTITY;
   return Math.min(MAX_QUANTITY, Math.max(MIN_QUANTITY, Math.round(value)));
 }
 
