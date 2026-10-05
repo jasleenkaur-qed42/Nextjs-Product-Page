@@ -44,3 +44,8 @@ certificates
 
 # claude code local settings (personal, not shared with the team)
 .claude/settings.local.json
+# engineering-change workflow artifacts
+evidence/
+plans/
+pr/
+worklog/
