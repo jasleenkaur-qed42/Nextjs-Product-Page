@@ -43,7 +43,7 @@ For any symptom that shows up in a web page, reproduce it in a real browser thro
 
 1. Confirm the tools are available and the app URL is known (dev server already running, or started with an existing project script). If the tools are missing, say so, mark the reproduction "not run: Chrome DevTools unavailable", and lower Confidence. Don't fall back to guessing.
 2. Open the page and follow the user's steps (navigate, click, fill) to the point of failure.
-3. Capture evidence at the failure: console messages (errors/warnings with stack traces), failed or wrong network requests (URL, status, payload), a page snapshot or screenshot, and DOM or computed-style state when layout is involved. Use performance traces only for slowness symptoms.
+3. Capture evidence at the failure: console messages (errors/warnings with stack traces), failed or wrong network requests (URL, status, payload), a page snapshot and a screenshot saved to `evidence/<KEY>/before-<n>-<what>.png` (via the screenshot tool's file path; create nothing else), and DOM or computed-style state when layout is involved. Use performance traces only for slowness symptoms.
 4. Record in Evidence: the steps, the URL, and what each capture showed. Map stack traces and request URLs back to source files for Relevant Code and Flow.
 5. Read-only means the app's state, not just the repo: don't submit destructive actions (delete, pay, send) against real data, and don't run scripts that change page data. Use `evaluate_script` only to read state.
 

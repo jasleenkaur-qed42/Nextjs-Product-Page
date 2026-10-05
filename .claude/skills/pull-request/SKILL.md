@@ -19,25 +19,27 @@ Turns a finished change into a commit and a draft PR. It runs in two modes, chos
 
 - The Jira ticket key (for example `PROJ-123`), taken from the user's request. If none was given, stop and report "Jira ticket key missing"; do not invent one.
 - The plan path, the verification result, and the review verdict with any remaining limitations (the PR description needs them, and the commit is the first place where the review's findings may be shown).
+- The evidence directory `evidence/<KEY>/` (screenshots and test output captured by `investigate` and `verification`), if it exists.
 - The mode: `prepare` or `raise`.
 
 ## Prepare
 
 1. **Check the repo.** `git status`, `git branch --show-current`. If not a git repo, stop and report that a commit and PR cannot be made.
 2. **Branch.** If on `main`, `master`, or the default branch, create `<ticket-key-lowercase>-<slug>` with `git checkout -b`. Otherwise stay on the current branch.
-3. **Stage only the change.** Add the files the diff shows as the change by name. Never `git add -A` or `git add .`. Never stage `plans/`, `pr/`, `.env*`, secrets, build output, or files unrelated to the change; list anything skipped.
+3. **Stage only the change.** Add the files the diff shows as the change by name. Never `git add -A` or `git add .`. Stage the image and text files in `evidence/<KEY>/` by name as part of the commit, so the PR can show them. Never stage `plans/`, `pr/`, `worklog/`, `.env*`, secrets, build output, or files unrelated to the change; list anything skipped.
 4. **Commit.** One commit:
    - Subject: `<TICKET-KEY>: <imperative title, max ~70 chars>` (for example `PROJ-123: Clamp quantity to avoid NaN total`).
    - Body: a short why (cause and fix), wrapped at ~72 chars.
    - End with the attribution line the session's system reminder gives, if one is present.
    - Never use `--no-verify`, `--amend`, or force. If a hook fails, report it and stop; do not bypass it.
-5. **Write `pr/<slug>.md`** (create `pr/` if missing) in the format below. It is the only file this skill creates.
+5. **Write `pr/<slug>.md`** (create `pr/` if missing) in the format below. Embed the evidence in the Evidence section using relative paths (`evidence/<KEY>/<file>.png`) for now. It is the only file this skill creates.
 6. **Return** the commit hash, the branch, the PR file path, and the PR title. Do not paste the PR body into chat.
 
 ## Raise
 
 1. Re-read `pr/<slug>.md` (the user may have edited it). Use its title and body as they are now.
 2. `git push -u origin <branch>`. Never force-push.
+   - Then turn each evidence path in `pr/<slug>.md` into an image link that renders in the PR: `![caption](https://github.com/<owner>/<repo>/blob/<branch>/evidence/<KEY>/<file>.png?raw=true)`, with owner and repo from `git remote get-url origin`. Edit only `pr/<slug>.md`. Text evidence is linked as a plain blob URL.
 3. `gh pr create --draft --title "<title>" --body-file pr/<slug>.md`. **Always `--draft`.** Never mark it ready for review.
 4. Return the PR URL. If push or `gh` fails (no remote, not authenticated), report the exact error; do not try another way to publish.
 
@@ -65,6 +67,9 @@ Turns a finished change into a commit and a draft PR. It runs in two modes, chos
 ## Review
 <verdict, and what the reviewer raised and how it was handled; remaining limitations>
 
+## Evidence
+Before and after screenshots with a one-line caption each, and the test output file. If none exist (no UI, or the browser was unavailable), write "None captured" and why.
+
 ## Risks / Notes
 <risks, follow-ups, anything the reviewer of the PR should know>
 ```
@@ -80,4 +85,5 @@ Only report what was verified in this run. Do not write "tests pass" unless the 
 | "`git add -A` is quicker" | Stage by name. Plans and PR files are not part of the change. |
 | "The hook failed, use `--no-verify`" | Report it and stop. |
 | "No ticket number, I'll make one up" | Stop and report it missing. |
+| "Screenshots are large, leave them out" | The user asked for evidence in the PR. Commit them by name and link them. |
 | "I'll put the description in chat" | It lives in `pr/<slug>.md`. |

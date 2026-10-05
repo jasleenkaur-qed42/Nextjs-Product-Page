@@ -1,7 +1,7 @@
 ---
 name: verification
 description: Use when an implementation (typically an execute report) is finished and the question is whether it actually solved the problem without breaking anything else - before calling the work done, committing, or opening a PR.
-allowed-tools: mcp__chrome-devtools, Read, Grep, Glob, Bash(git log:*), Bash(git diff:*), Bash(git show:*), Bash(git status:*), Bash(git branch:*), Bash(ls:*), Bash(cat:*), Bash(head:*), Bash(tail:*), Bash(wc:*), Bash(find:*), Bash(grep:*), Bash(rg:*), Bash(npm test:*), Bash(npm run:*), Bash(pnpm test:*), Bash(pnpm run:*), Bash(yarn test:*), Bash(yarn run:*), Bash(npx tsc:*), Bash(npx eslint:*), Bash(npx prettier --check:*), Bash(npx jest:*), Bash(npx vitest:*), Bash(make:*), Bash(cargo test:*), Bash(cargo check:*), Bash(cargo clippy:*), Bash(go test:*), Bash(go vet:*), Bash(go build:*), Bash(pytest:*), Bash(python -m pytest:*), Bash(ruff check:*), Bash(mypy:*)
+allowed-tools: mcp__chrome-devtools, Write(./evidence/**), Read, Grep, Glob, Bash(git log:*), Bash(git diff:*), Bash(git show:*), Bash(git status:*), Bash(git branch:*), Bash(ls:*), Bash(cat:*), Bash(head:*), Bash(tail:*), Bash(wc:*), Bash(find:*), Bash(grep:*), Bash(rg:*), Bash(npm test:*), Bash(npm run:*), Bash(pnpm test:*), Bash(pnpm run:*), Bash(yarn test:*), Bash(yarn run:*), Bash(npx tsc:*), Bash(npx eslint:*), Bash(npx prettier --check:*), Bash(npx jest:*), Bash(npx vitest:*), Bash(make:*), Bash(cargo test:*), Bash(cargo check:*), Bash(cargo clippy:*), Bash(go test:*), Bash(go vet:*), Bash(go build:*), Bash(pytest:*), Bash(python -m pytest:*), Bash(ruff check:*), Bash(mypy:*)
 ---
 
 # Verification (Did It Actually Work?)
@@ -14,7 +14,7 @@ Answers: **did the implementation solve the problem without introducing another 
 
 ## Read-Only Rules
 
-**Never:** edit or create project files, run auto-fixers (`--fix`, `--write`, `prettier --write`, `cargo fmt`, `go fmt`), install dependencies, run migrations, or use `git add/commit/checkout/reset/stash`. If a check fails, report it. Fixing goes back through `planning` and `execute`.
+**Never:** edit or create project files (the one exception is evidence files under `evidence/<KEY>/`, see Evidence), run auto-fixers (`--fix`, `--write`, `prettier --write`, `cargo fmt`, `go fmt`), install dependencies, run migrations, or use `git add/commit/checkout/reset/stash`. If a check fails, report it. Fixing goes back through `planning` and `execute`.
 
 Checks that write build output (`build`) are allowed only if the command is a plain build script; say so in the report. If a check would need network, credentials, an SDK, or a device you don't have, mark it **Not run** with the reason. Never fake or skip silently.
 
@@ -40,7 +40,10 @@ Prefer the project's own script over a raw tool call, and use the package manage
 ## Process
 
 1. **Inspect the diff.** `git status` and `git diff` (also `--stat`). If not a git repo, use the files named by the execute report and say diff review is limited. List changed files and compare against the plan: anything unexpected, missing, or unrelated (debug code, stray files, lockfile churn, config edits) is a finding.
-2. **Run targeted tests.** The tests the plan or diff names, narrowest first. Confirm the regression test exists and passes; if the tooling permits, check it would have failed without the fix, otherwise say that was not checked.
+2. **Test the change itself, whatever its size.** A one-line change is verified like any other. Find the test(s) that exercise the changed line or behavior, run them narrowest first, and confirm they pass. Confirm the regression test exists; if the tooling permits, check it would have failed without the fix, otherwise say that was not checked.
+   - If no test covers the changed behavior, that is a finding, not a pass: report Targeted Tests as ❌ **No test covers the change** (or ⚠️ Not run with the reason if the project has no test setup). Verification cannot write tests, so the result is Not verified and the fix goes back through `planning` and `execute`.
+   - For a web UI change, the Browser check below also counts as testing the change. Run it even when the diff is one line.
+   - Never skip this step because the diff is small, the change looks obviously correct, or the broader suite is green.
 3. **Run relevant checks.** Only those detected and touched by the change: TypeScript, lint, formatting (check mode), build.
    - **Browser check.** If the change affects anything visible or behavioral in a web page, or the original problem was reproduced in the browser, re-run that exact reproduction with Chrome DevTools (see Browser Verification).
 4. **Run the broader test suite** to look for collateral damage.
@@ -59,12 +62,20 @@ Unit tests do not prove a browser symptom is gone. When the change touches a web
 4. Read-only: don't submit destructive actions against real data, and use `evaluate_script` only to read state.
 5. If the tools are unavailable, the app cannot be started, or no reproduction steps exist, report Browser as ⚠️ Not run with the reason. Never mark it passed from the test results.
 
+## Evidence
+
+Save proof for the PR and the ticket under `evidence/<KEY>/` (the key comes from the orchestrator; use the plan slug if none):
+- Browser changes: an `after-<n>-<what>.png` screenshot for each step that matches an investigation `before-*` screenshot, taken with the screenshot tool's file path.
+- Always: `test-output.txt` with the command and the key output lines (counts, failures) of the targeted tests and checks, written with Write. Copy real output only.
+- Never save anything with secrets, tokens, cookies or personal data. Report each file path in the output under Evidence, and list gaps (no browser, no UI) as Not captured with the reason.
+
 ## Red Flags - Stop and Re-check
 
 | Thought | Reality |
 |---------|---------|
 | "The execute report says tests passed" | That's a claim. Run them. |
 | "It should pass" / "it's a tiny change" | Should is not evidence. Run it. |
+| "It's a one-line change, the broader suite is enough" | Test the changed behavior directly. No covering test means Not verified. |
 | "Lint failed, I'll run --fix" | Read-only. Report it. |
 | "Full suite is slow, skip it" | Mark it Not run with the reason; don't imply it passed. |
 | "This failure was already there" | Confirm (e.g. against the base) or say it is unconfirmed. |
@@ -108,6 +119,9 @@ Android SDK unavailable
 ### Diff Review
 ✅ Only expected files changed
 
+### Evidence
+`evidence/PROJ-123/after-1-cart.png`, `evidence/PROJ-123/test-output.txt`
+
 ### Result
 
 Implementation verified against the available checks.
@@ -128,6 +142,8 @@ Result rules:
 - Assuming `npm test`, `tsc`, or `eslint` exist without looking.
 - Running a fixer or formatter in write mode.
 - Running only the new tests and skipping the broader suite.
+- Skipping the targeted test because the change is only a line or two.
+- Passing a change that no test exercises.
 - Treating "not run" or "not applicable" as a pass.
 - Verifying a browser bug only with unit tests.
 - Skipping the diff review because the commands were green.

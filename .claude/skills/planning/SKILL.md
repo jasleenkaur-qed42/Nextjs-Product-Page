@@ -43,7 +43,7 @@ Reading is limited to what is needed to write precise changes: open the files th
 2. **Identify files to change.** Start from the report's Relevant Code; add only callers, types, exports, config, and docs affected by the change. Prefer the fewest files that address the root cause.
 3. **Define each change.** For every file: what changes, and **why** it is necessary (tie it to the root cause). Change the origin of the problem, not the symptom's location.
 4. **Look for reuse.** Search for existing helpers, hooks, components, utilities, and patterns that already do this. Reuse or extend them; propose a new abstraction only when none fits, and say why.
-5. **Plan tests.** Find existing tests on the path (update if their expectations encode the bug). Specify new regression tests: name, scenario, and the assertion that fails before the change and passes after.
+5. **Plan tests.** Find existing tests on the path (update if their expectations encode the bug). Specify new regression tests: name, scenario, and the assertion that fails before the change and passes after. Every plan has at least one test that exercises the change, even a one-line fix; verification fails a change that no test covers.
 6. **Assess compatibility.** Public APIs, props/signatures, exported types, persisted data, config or env, behavior consumers may rely on, supported versions.
 7. **List risks.** Blast radius, behavior changes for unaffected paths, untested areas, ordering/performance concerns, and assumptions from the investigation still unverified.
 8. **Define verification.** Exact commands (discover them from package.json/Makefile/CI config, don't invent), narrowest first, then broader; plus any manual check that confirms the original symptom is gone.
