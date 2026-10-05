@@ -7,6 +7,15 @@
     "chrome-devtools": {
       "command": "npx",
       "args": ["-y", "chrome-devtools-mcp@latest"]
+    },
+    "jira": {
+      "command": "uvx",
+      "args": ["mcp-atlassian"],
+      "env": {
+        "JIRA_URL": "https://developerjasleen.atlassian.net",
+        "JIRA_USERNAME": "developer.jasleen@gmail.com",
+        "JIRA_API_TOKEN": "ATATT3xFfGF0ifXEw_820bgYXwCuGQGaos5e-6sXFoljsCNaNR7VH5ajpkTeSSl9eRfklQoyzgMwk7iQgk8kYgyvBmAzcvQ4raxHrxrp9KJai_mffiwwFYwxbl-Im1O-m2E-3VOohE8J_TWCv0wIxpR4pN48ZRiOMighCsiDLClHXf7DHRVhen0=C312342F"
+      }
     }
   }
 }
