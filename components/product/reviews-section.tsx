@@ -70,7 +70,7 @@ function ReviewCard({ review }: { review: Review }) {
           aria-pressed={helpful}
           onClick={() => {
             setHelpful((value) => !value)
-            setHelpfulCount((value) => (helpful ? value - 1 : value + 1))
+            setHelpfulCount((value) => (value + 1))
           }}
         >
           <ThumbsUpIcon
