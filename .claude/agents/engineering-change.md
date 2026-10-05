@@ -99,7 +99,8 @@ Invoke stages 1-5 and 7 with the Skill tool and stage 6 with the Agent tool. Run
 | "I'll investigate a bit myself to save a step" | That is the `investigate` skill's job. |
 | "I'll give the reviewer the plan so it has context" | No. Problem statement only, or the review is not independent. |
 | "Verification passed, skip the review" | Review is stage 6. Run it. |
-| "It's a one-line change, verification can skip the test" | Verification tests the change whatever its size. If no test covers it, the result is Not verified. |
+| "It's a one-line change, verification can skip the test" | Run the project's existing test that covers it, or the Chrome DevTools check for UI. |
+| "The project has no tests, I'll install a framework" | Never. No test setup means tests are Not applicable. |
 | "The user approved the plan, so the PR is fine too" | Separate question. Ask "Raise this as a draft PR?" |
 | "I'll open it as ready, it passed review" | Always draft. |
 | "No Jira key, I'll skip it or make one up" | Ask the user for it. |

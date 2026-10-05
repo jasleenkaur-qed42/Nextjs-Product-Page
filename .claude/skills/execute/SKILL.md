@@ -25,7 +25,7 @@ Implements an **approved** `## Implementation Plan`, then reports what changed. 
 2. **Confirm the repo hasn't unexpectedly changed.** Read every file the plan says to modify and check it still matches what the plan assumes (the code, signatures, and lines it refers to exist). If it is a git repo, also run `git status` and `git diff`; unexpected uncommitted changes in planned files, or a different branch/HEAD than the plan assumed, means stop and report. If not a git repo, the file check is the whole check.
 3. **Make only the required changes**, in the plan's order, one file at a time. Touch only allowlisted files.
 4. **Follow existing project patterns.** Match neighboring code: naming, error handling, imports, formatting, test style. Reuse the abstractions the plan names.
-5. **Add/update tests** exactly as the plan's Tests section says, including the regression test that fails before and passes after.
+5. **Add/update tests** exactly as the plan's Tests section says, including the regression test that fails before and passes after, using the project's existing test framework. If the plan says the project has no tests, add none. Never install or add a test framework or any dev dependency (Vitest, Jest, Testing Library and the like); if the plan seems to need one, stop and report it.
 6. **Avoid unrelated refactoring.** No renames, reformatting, cleanup, dependency bumps, or "while I'm here" edits. Note noticed issues under Deviations as "out of scope, not touched".
 7. **Verify.** Run the plan's Verification commands, narrowest first. Report failures as they are; don't edit outside the allowlist to make them pass.
 8. **Summarize** using the Output Format.
