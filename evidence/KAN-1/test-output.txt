@@ -1,0 +1,20 @@
+KAN-1 verification (run in this session)
+
+Tests: Not applicable (project has no test script or test setup)
+
+$ npx tsc --noEmit
+exit 0, no output
+
+$ npm run lint
+0 errors, 1 warning (pre-existing, unrelated):
+components/product/product-badge.tsx 16:8 react-hooks/exhaustive-deps
+
+$ npm run build
+Compiled; static pages generated (5/5). Routes: / , /_not-found , /manifest.webmanifest
+
+Browser (Chrome DevTools, http://localhost:3000/#reviews, first review "Priya Mehta"):
+  click 1 -> "Helpful (1)"   (after-1-after-first-click.png)
+  click 2 -> "Helpful"       (after-2-after-second-click.png)
+  click 3 -> "Helpful (1)"   (after-3-after-third-click.png)
+  second review click -> toggled on its own card (after-4-second-card-independent.png)
+Console: only React DevTools info and HMR log; no errors or warnings.

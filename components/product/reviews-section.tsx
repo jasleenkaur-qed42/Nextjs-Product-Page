@@ -29,7 +29,7 @@ type Review = (typeof reviewsData)[number]
 
 function ReviewCard({ review }: { review: Review }) {
   const [helpful, setHelpful] = useState(false)
-  const [helpfulCount, setHelpfulCount] = useState(0)
+  const helpfulCount = helpful ? 1 : 0
 
   return (
     <Card className="bg-background/70">
@@ -68,10 +68,7 @@ function ReviewCard({ review }: { review: Review }) {
           size="sm"
           className="mt-3"
           aria-pressed={helpful}
-          onClick={() => {
-            setHelpful((value) => !value)
-            setHelpfulCount((value) => (value + 1))
-          }}
+          onClick={() => setHelpful((value) => !value)}
         >
           <ThumbsUpIcon
             data-icon="inline-start"
